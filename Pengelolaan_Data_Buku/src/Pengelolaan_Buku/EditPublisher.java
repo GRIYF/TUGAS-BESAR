@@ -6,19 +6,30 @@
 package Pengelolaan_Buku;
 
 import java.awt.Color;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JPanel;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
  * @author Destroy Eyes
  */
 public class EditPublisher extends javax.swing.JFrame {
-
+DefaultTableModel model;
     /**
      * Creates new form EditPublisher
      */
     public EditPublisher() {
         initComponents();
+        String []judul={"KODE PENERBIT","NAMA PENERBIT"};
+        model = new DefaultTableModel(judul, 0);
+        jTable1.setModel(model);
+        tampilkan();
     }
 
     /**
@@ -91,6 +102,8 @@ public class EditPublisher extends javax.swing.JFrame {
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel3.setText("NAMA PENERBIT");
         jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(34, 186, -1, -1));
+
+        jTextField1.setEditable(false);
         jPanel1.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(162, 141, 60, 27));
         jPanel1.add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(162, 180, 188, 27));
 
@@ -103,6 +116,11 @@ public class EditPublisher extends javax.swing.JFrame {
                 "Title 1", "Title 2"
             }
         ));
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable1MouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTable1);
 
         jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(376, 100, 200, 160));
@@ -286,6 +304,14 @@ public class EditPublisher extends javax.swing.JFrame {
     private void btnSaveMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSaveMousePressed
         // TODO add your handling code here:
         setColorClicked(btnSave);
+        try {
+            Connection cn =  DriverManager.getConnection("jdbc:mysql://localhost:3306/dbbuku","root","");
+            cn.createStatement().executeUpdate("update penerbit set nama_penerbit='"+jTextField2.getText()+"' where kode_penerbit='"+jTextField1.getText()+"'");
+        tampilkan();
+        reset();
+        } catch (SQLException ex) {
+            Logger.getLogger(Admin.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_btnSaveMousePressed
 
     private void btnSaveMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSaveMouseReleased
@@ -306,6 +332,7 @@ public class EditPublisher extends javax.swing.JFrame {
     private void btnClearMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnClearMousePressed
         // TODO add your handling code here:
         setColorClicked(btnClear);
+        reset();
     }//GEN-LAST:event_btnClearMousePressed
 
     private void btnClearMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnClearMouseReleased
@@ -326,6 +353,14 @@ public class EditPublisher extends javax.swing.JFrame {
     private void btnDeleteMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnDeleteMousePressed
         // TODO add your handling code here:
         setColorClicked(btnDelete);
+        try {
+            Connection cn =  DriverManager.getConnection("jdbc:mysql://localhost:3306/dbbuku","root","");
+            cn.createStatement().executeUpdate("delete from penerbit where kode_penerbit='"+jTextField1.getText()+"'");
+            tampilkan();
+            reset();
+        } catch (SQLException ex) {
+            Logger.getLogger(Admin.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_btnDeleteMousePressed
 
     private void btnDeleteMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnDeleteMouseReleased
@@ -353,6 +388,15 @@ public class EditPublisher extends javax.swing.JFrame {
         // TODO add your handling code here:
         setColorButton(btnCancel);
     }//GEN-LAST:event_btnCancelMouseReleased
+
+    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+        // TODO add your handling code here:
+         int i = jTable1.getSelectedRow();
+        if (i>-1){
+            jTextField1.setText(model.getValueAt(i, 0).toString());
+            jTextField2.setText(model.getValueAt(i, 1).toString());
+        }
+    }//GEN-LAST:event_jTable1MouseClicked
 
     /**
      * @param args the command line arguments
@@ -416,5 +460,25 @@ void setColorButton(JPanel panel){
     }
     void setColorClicked(JPanel panel){
         panel.setBackground(new Color(52, 73, 120));
+    }
+     private void tampilkan() {
+        int row = jTable1.getRowCount();
+        for ( int a=0;a<row;a++){
+            model.removeRow(0);
+        }
+        try {
+            Connection cn =  DriverManager.getConnection("jdbc:mysql://localhost:3306/dbbuku","root","");
+            ResultSet rs = cn.createStatement().executeQuery("select * from penerbit"); 
+            while (rs.next()){
+                String data[]={rs.getString(1),rs.getString(2)};
+                model.addRow(data);
+            }
+                    } catch (SQLException ex) {
+            Logger.getLogger(Admin.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+      private void reset() {
+        jTextField1.setText("");
+        jTextField2.setText("");
     }
 }

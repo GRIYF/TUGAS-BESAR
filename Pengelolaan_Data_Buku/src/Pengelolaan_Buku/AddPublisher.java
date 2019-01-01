@@ -6,6 +6,11 @@
 package Pengelolaan_Buku;
 
 import java.awt.Color;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JPanel;
 
 /**
@@ -229,6 +234,7 @@ public class AddPublisher extends javax.swing.JFrame {
     private void btnClearMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnClearMousePressed
         // TODO add your handling code here:
         setColorClicked(btnClear);
+        reset();
     }//GEN-LAST:event_btnClearMousePressed
 
     private void btnClearMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnClearMouseReleased
@@ -249,6 +255,13 @@ public class AddPublisher extends javax.swing.JFrame {
     private void btnSaveMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSaveMousePressed
         // TODO add your handling code here:
         setColorClicked(btnSave);
+        try {
+            Connection cn =  DriverManager.getConnection("jdbc:mysql://localhost:3306/dbbuku","root","");
+            cn.createStatement().executeUpdate("insert into penerbit values"+"(kode_penerbit,'"+jTextField1.getText()+"')");
+        } catch (SQLException ex) {
+            Logger.getLogger(AddCategory.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        this.setVisible(false);
     }//GEN-LAST:event_btnSaveMousePressed
 
     private void btnSaveMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSaveMouseReleased
@@ -312,5 +325,8 @@ void setColorButton(JPanel panel){
     }
     void setColorClicked(JPanel panel){
         panel.setBackground(new Color(52, 73, 120));
+    }
+    private void reset() {
+        jTextField1.setText("");
     }
 }

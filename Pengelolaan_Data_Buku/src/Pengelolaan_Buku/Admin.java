@@ -8,25 +8,66 @@ package Pengelolaan_Buku;
 import java.awt.Color;
 import java.awt.Frame;
 import java.awt.event.MouseListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
  * @author Destroy Eyes
  */
 public class Admin extends javax.swing.JFrame {
-
+DefaultTableModel model,model2;
     /**
      * Creates new form Admin
      */
+    String c1;
+    String c2;
+
+    public String getC1() {
+        return c1;
+    }
+
+    public void setC1(String c1) {
+        this.c1 = c1;
+    }
+
+    public String getC2() {
+        return c2;
+    }
+
+    public void setC2(String c2) {
+        this.c2 = c2;
+    }
+    
     int mousepX;
     int mousepY;
     public Admin() {
         initComponents();
+        /*String []judul={"KODE","JUDUL BUKU","PENGARANG","TGL TERBIT"};
+        model = new DefaultTableModel(judul, 0);
+        jTable1.setModel(model);
+        tampilkan(); */
+        
+      String []judul2={"KODE","JUDUL BUKU","PENGARANG","TAHUN TERBIT","LOKASI BUKU","GAMBAR","PENERBIT","KATEGORI"};
+        model2 = new DefaultTableModel(judul2, 0);
+        jTable2.setModel(model2);
+        tampilkan2();
+       BindCombo();
+       BindCombo2();
+        //comboAdd1();
+        //comboAdd2();
     }
 
     /**
@@ -105,13 +146,13 @@ public class Admin extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         jLabel10 = new javax.swing.JLabel();
-        jTextField14 = new javax.swing.JTextField();
-        jTextField15 = new javax.swing.JTextField();
-        jTextField16 = new javax.swing.JTextField();
+        addKode = new javax.swing.JTextField();
+        addJudul = new javax.swing.JTextField();
+        addPengarang = new javax.swing.JTextField();
         jComboBox6 = new javax.swing.JComboBox<>();
         jComboBox7 = new javax.swing.JComboBox<>();
-        jTextField17 = new javax.swing.JTextField();
-        jTextField18 = new javax.swing.JTextField();
+        addTahun = new javax.swing.JTextField();
+        addLokasi = new javax.swing.JTextField();
         btnBrowseAddBook = new javax.swing.JPanel();
         jLabel40 = new javax.swing.JLabel();
         jPanel17 = new javax.swing.JPanel();
@@ -944,17 +985,25 @@ public class Admin extends javax.swing.JFrame {
         jPanel2.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, -1, -1));
 
         addbook.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 40, -1, 90));
-        addbook.add(jTextField14, new org.netbeans.lib.awtextra.AbsoluteConstraints(308, 176, 71, 27));
-        addbook.add(jTextField15, new org.netbeans.lib.awtextra.AbsoluteConstraints(308, 233, 188, 27));
-        addbook.add(jTextField16, new org.netbeans.lib.awtextra.AbsoluteConstraints(308, 290, 188, 27));
+        addbook.add(addKode, new org.netbeans.lib.awtextra.AbsoluteConstraints(308, 176, 71, 27));
+        addbook.add(addJudul, new org.netbeans.lib.awtextra.AbsoluteConstraints(308, 233, 188, 27));
+        addbook.add(addPengarang, new org.netbeans.lib.awtextra.AbsoluteConstraints(308, 290, 188, 27));
 
-        jComboBox6.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBox6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox6ActionPerformed(evt);
+            }
+        });
         addbook.add(jComboBox6, new org.netbeans.lib.awtextra.AbsoluteConstraints(308, 347, 188, 27));
 
-        jComboBox7.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBox7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox7ActionPerformed(evt);
+            }
+        });
         addbook.add(jComboBox7, new org.netbeans.lib.awtextra.AbsoluteConstraints(308, 461, 188, 27));
-        addbook.add(jTextField17, new org.netbeans.lib.awtextra.AbsoluteConstraints(308, 404, 71, 27));
-        addbook.add(jTextField18, new org.netbeans.lib.awtextra.AbsoluteConstraints(308, 518, 188, 27));
+        addbook.add(addTahun, new org.netbeans.lib.awtextra.AbsoluteConstraints(308, 404, 71, 27));
+        addbook.add(addLokasi, new org.netbeans.lib.awtextra.AbsoluteConstraints(308, 518, 188, 27));
 
         btnBrowseAddBook.setBackground(new java.awt.Color(41, 128, 220));
         btnBrowseAddBook.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -1183,6 +1232,11 @@ public class Admin extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        jTable2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable2MouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(jTable2);
 
         editbook.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 190, 600, 440));
@@ -1926,6 +1980,15 @@ public class Admin extends javax.swing.JFrame {
     private void btnSaveAddBookMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSaveAddBookMousePressed
         // TODO add your handling code here:
         setColorClicked(btnSaveAddBook);
+        try {
+            // TODO add your handling code here:
+            Connection cn =  DriverManager.getConnection("jdbc:mysql://localhost:3306/dbbuku","root","");
+            cn.createStatement().executeUpdate("insert into buku values"+"('"+addKode.getText()+"','"+addJudul.getText()+"','"+addPengarang.getText()+"','"+addTahun.getText()+"','"+addLokasi.getText()+"',gambar,'1','"+getC1()+"','"+getC2()+"')");
+            
+           reset();
+        } catch (SQLException ex) {
+            Logger.getLogger(Admin.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_btnSaveAddBookMousePressed
 
     private void btnSaveAddBookMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSaveAddBookMouseReleased
@@ -2228,6 +2291,34 @@ public class Admin extends javax.swing.JFrame {
         // TODO add your handling code here:
         setColorButton(btnDeleteBook);
     }//GEN-LAST:event_btnDeleteBookMouseReleased
+
+    private void jComboBox6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox6ActionPerformed
+        // TODO add your handling code here:
+        HashMap<String, Integer> map = populateCombo();
+        setC1(map.get(jComboBox6.getSelectedItem().toString()).toString()); 
+    }//GEN-LAST:event_jComboBox6ActionPerformed
+
+    private void jComboBox7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox7ActionPerformed
+        // TODO add your handling code here:
+        HashMap<String, Integer> map = populateCombo2();
+        setC2(map.get(jComboBox7.getSelectedItem().toString()).toString()) ;
+    }//GEN-LAST:event_jComboBox7ActionPerformed
+
+    private void jTable2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable2MouseClicked
+        // TODO add your handling code here:
+        int i = jTable2.getSelectedRow();
+        if (i>-1){
+            jTextField19.setText(model.getValueAt(i, 0).toString());
+            jTextField20.setText(model.getValueAt(i, 1).toString());
+            jTextField21.setText(model.getValueAt(i, 2).toString());
+            jTextField22.setText(model.getValueAt(i, 3).toString());
+            jTextField23.setText(model.getValueAt(i, 4).toString());
+            jLabel33.setText(model.getValueAt(i, 5).toString());
+            jTextField1.setText(model.getValueAt(i, 6).toString());
+            jComboBox8.addItem(model.getValueAt(i, 7).toString());
+            jComboBox9.addItem(model.getValueAt(i, 8).toString());
+        }
+    }//GEN-LAST:event_jTable2MouseClicked
     
     
     /**
@@ -2271,6 +2362,11 @@ public class Admin extends javax.swing.JFrame {
     private javax.swing.JPanel Editbookbtn;
     private javax.swing.JPanel Homebtn;
     private javax.swing.JPanel Logoutbtn;
+    private javax.swing.JTextField addJudul;
+    private javax.swing.JTextField addKode;
+    private javax.swing.JTextField addLokasi;
+    private javax.swing.JTextField addPengarang;
+    private javax.swing.JTextField addTahun;
     private javax.swing.JPanel addbook;
     private javax.swing.JPanel admin;
     private javax.swing.JPanel bg;
@@ -2378,11 +2474,6 @@ public class Admin extends javax.swing.JFrame {
     private javax.swing.JTable jTable2;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField13;
-    private javax.swing.JTextField jTextField14;
-    private javax.swing.JTextField jTextField15;
-    private javax.swing.JTextField jTextField16;
-    private javax.swing.JTextField jTextField17;
-    private javax.swing.JTextField jTextField18;
     private javax.swing.JTextField jTextField19;
     private javax.swing.JTextField jTextField20;
     private javax.swing.JTextField jTextField21;
@@ -2393,7 +2484,13 @@ public class Admin extends javax.swing.JFrame {
     private javax.swing.JPanel sidepane;
     private javax.swing.JPanel toppane;
     // End of variables declaration//GEN-END:variables
-
+ private void reset() {
+        addKode.setText("");
+        addJudul.setText("");
+        addPengarang.setText("");
+        addTahun.setText("");
+        addLokasi.setText("");
+    }
     
     
     void setColorButton(JPanel panel){
@@ -2418,5 +2515,85 @@ public class Admin extends javax.swing.JFrame {
     
     void setColorClicked(JPanel panel){
         panel.setBackground(new Color(52, 73, 120));
+    }
+   
+    /*private void tampilkan() {
+        int row = jTable1.getRowCount();
+        for ( int a=0;a<row;a++){
+            model.removeRow(0);
+        }
+        try {
+            Connection cn =  DriverManager.getConnection("jdbc:mysql://localhost:3306/dbbuku","root","");
+            ResultSet rs = cn.createStatement().executeQuery("select * from buku"); 
+            while (rs.next()){
+                String data[]={rs.getString(1),rs.getString(2),rs.getString(3),rs.getString(4)};
+                model.addRow(data);
+            }
+                    } catch (SQLException ex) {
+            Logger.getLogger(Admin.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }*/
+    
+    private void tampilkan2() {
+        int row = jTable2.getRowCount();
+        for ( int a=0;a<row;a++){
+            model2.removeRow(0);
+        }
+        try {
+            Connection cn =  DriverManager.getConnection("jdbc:mysql://localhost:3306/dbbuku","root","");
+            ResultSet rs = cn.createStatement().executeQuery("select * from buku"); 
+            while (rs.next()){
+                String data[]={rs.getString(1),rs.getString(2),rs.getString(3),rs.getString(4),rs.getString(5),rs.getString(6),rs.getString(7),rs.getString(8),rs.getString(9)};
+                model2.addRow(data);
+            }
+                    } catch (SQLException ex) {
+            Logger.getLogger(Admin.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    } 
+    
+    public HashMap<String, Integer> populateCombo(){
+         HashMap<String, Integer> map = new HashMap<String, Integer>();
+         try {
+            Connection cn =  DriverManager.getConnection("jdbc:mysql://localhost:3306/dbbuku","root","");
+            ResultSet rs = cn.createStatement().executeQuery("select kode_penerbit,nama_penerbit from penerbit"); 
+            ComboItem cmi;
+            while (rs.next()){
+                cmi = new ComboItem(rs.getInt(1),rs.getString(2));
+                map.put(cmi.getNama(), cmi.getKode());
+            }
+                    } catch (SQLException ex) {
+            Logger.getLogger(Admin.class.getName()).log(Level.SEVERE, null, ex);
+        }
+         return map;
+    }
+    public HashMap<String, Integer> populateCombo2(){
+         HashMap<String, Integer> map = new HashMap<String, Integer>();
+         try {
+            Connection cn =  DriverManager.getConnection("jdbc:mysql://localhost:3306/dbbuku","root","");
+            ResultSet rs = cn.createStatement().executeQuery("select kode_kategori,nama_kategori from kategori"); 
+            ComboItem cmi;
+            while (rs.next()){
+                cmi = new ComboItem(rs.getInt(1),rs.getString(2));
+                map.put(cmi.getNama(), cmi.getKode());
+            }
+                    } catch (SQLException ex) {
+            Logger.getLogger(Admin.class.getName()).log(Level.SEVERE, null, ex);
+        }
+         return map;
+    }
+    
+    public void BindCombo(){
+        //Admin mq = new Admin();
+        HashMap<String, Integer> map = populateCombo();
+        for (String s : map.keySet()){
+            jComboBox6.addItem(s);
+        }
+    }
+    public void BindCombo2(){
+        //Admin mq = new Admin();
+        HashMap<String, Integer> map = populateCombo2();
+        for (String s : map.keySet()){
+            jComboBox7.addItem(s);
+        }
     }
 }
