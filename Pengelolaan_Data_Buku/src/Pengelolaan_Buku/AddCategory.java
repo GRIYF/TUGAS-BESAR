@@ -260,7 +260,15 @@ public class AddCategory extends javax.swing.JFrame {
         } catch (SQLException ex) {
             Logger.getLogger(AddCategory.class.getName()).log(Level.SEVERE, null, ex);
         }
-        this.setVisible(false);
+        System.gc();
+        java.awt.Window win[] = java.awt.Window.getWindows(); 
+        for(int i=0;i<win.length;i++){ 
+        win[i].setVisible(false);
+        win[i]=null;}         
+        Admin admin = new Admin();
+        admin.setVisible(true);
+        admin.panelHide();
+       this.setVisible(false);
     }//GEN-LAST:event_btnSaveMousePressed
 
     private void btnSaveMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSaveMouseReleased
