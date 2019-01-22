@@ -7,6 +7,16 @@ package Pengelolaan_Buku;
 
 import java.awt.Color;
 import java.awt.Frame;
+import java.awt.Image;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.ImageIcon;
 
 /**
  *
@@ -17,10 +27,22 @@ public class Home extends javax.swing.JFrame {
     /**
      * Creates new form Home
      */
+    String c1;
+
+    public String getC1() {
+        return c1;
+    }
+
+    public void setC1(String c1) {
+        this.c1 = c1;
+    }
+    
     int mousepX;
     int mousepY;
     public Home() {
         initComponents();
+        populateJtble();
+        BindCombo2();
     }
 
     /**
@@ -47,12 +69,13 @@ public class Home extends javax.swing.JFrame {
         jPanel4 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
-        jTextField1 = new javax.swing.JTextField();
+        search = new javax.swing.JTextField();
         jPanel9 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
         jComboBox1 = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Home");
         setUndecorated(true);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -198,7 +221,7 @@ public class Home extends javax.swing.JFrame {
         jScrollPane1.setViewportView(jTable1);
 
         jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 223, 1176, 445));
-        jPanel1.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(13, 183, 168, 27));
+        jPanel1.add(search, new org.netbeans.lib.awtextra.AbsoluteConstraints(13, 183, 168, 27));
 
         jPanel9.setBackground(new java.awt.Color(243, 180, 18));
         jPanel9.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -223,7 +246,11 @@ public class Home extends javax.swing.JFrame {
 
         jPanel1.add(jPanel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(183, 183, 27, 27));
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBox1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox1ActionPerformed(evt);
+            }
+        });
         jPanel1.add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(1014, 183, 173, 27));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1200, 700));
@@ -287,6 +314,32 @@ public class Home extends javax.swing.JFrame {
     private void jPanel9MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel9MousePressed
         // TODO add your handling code here:
         jPanel9.setBackground(new Color(255,206,44));
+        ArrayList<Buku> list = BindTableSearchHome();
+        String[] columnName = {"KODE","JUDUL BUKU","PENGARANG","TAHUN TERBIT","LOKASI BUKU","GAMBAR","PENERBIT","KATEGORI"};
+        Object[][] rows = new Object[list.size()][8];
+        for (int i = 0; i < list.size(); i++){
+            rows[i][0]=list.get(i).getKodeBuku();
+            rows[i][1]=list.get(i).getJudulBuku();
+            rows[i][2]=list.get(i).getPengarang();
+            rows[i][3]=list.get(i).getThnTerbit();
+            rows[i][4]=list.get(i).getLokasi();
+            
+            if(list.get(i).getGambar() != null){
+                ImageIcon image = new ImageIcon(new ImageIcon(list.get(i).getGambar()).getImage().getScaledInstance(150, 120, Image.SCALE_SMOOTH));
+                
+                rows[i][5] = image;
+            }else{
+                rows[i][5] = null;
+            }
+            
+            rows[i][6]=list.get(i).getPenerbit();
+            rows[i][7]=list.get(i).getKategori();
+        }
+        TheModel model = new TheModel(rows, columnName);
+        jTable1.setModel(model);
+        jTable1.setRowHeight(120);
+        jTable1.getColumnModel().getColumn(5).setPreferredWidth(150);
+        search.setText("");
     }//GEN-LAST:event_jPanel9MousePressed
 
     private void jPanel9MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel9MouseReleased
@@ -316,6 +369,38 @@ public class Home extends javax.swing.JFrame {
         // TODO add your handling code here:
         this.setState(Frame.ICONIFIED);
     }//GEN-LAST:event_jPanel7MousePressed
+
+    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
+        // TODO add your handling code here:
+        HashMap<String, Integer> map = populateCombo2();
+        setC1(map.get(jComboBox1.getSelectedItem().toString()).toString());
+       
+         ArrayList<Buku> list = BindTableCategory();
+        String[] columnName = {"KODE","JUDUL BUKU","PENGARANG","TAHUN TERBIT","LOKASI BUKU","GAMBAR","PENERBIT","KATEGORI"};
+        Object[][] rows = new Object[list.size()][8];
+        for (int i = 0; i < list.size(); i++){
+            rows[i][0]=list.get(i).getKodeBuku();
+            rows[i][1]=list.get(i).getJudulBuku();
+            rows[i][2]=list.get(i).getPengarang();
+            rows[i][3]=list.get(i).getThnTerbit();
+            rows[i][4]=list.get(i).getLokasi();
+            
+            if(list.get(i).getGambar() != null){
+                ImageIcon image = new ImageIcon(new ImageIcon(list.get(i).getGambar()).getImage().getScaledInstance(150, 120, Image.SCALE_SMOOTH));
+                
+                rows[i][5] = image;
+            }else{
+                rows[i][5] = null;
+            }
+            
+            rows[i][6]=list.get(i).getPenerbit();
+            rows[i][7]=list.get(i).getKategori();
+        }
+        TheModel model = new TheModel(rows, columnName);
+        jTable1.setModel(model);
+        jTable1.setRowHeight(120);
+        jTable1.getColumnModel().getColumn(5).setPreferredWidth(150);
+    }//GEN-LAST:event_jComboBox1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -371,6 +456,148 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextField search;
     // End of variables declaration//GEN-END:variables
+private ArrayList<Buku> BindTable() {
+        ArrayList<Buku> list = new ArrayList<Buku>();
+        try {
+            Connection cn =  DriverManager.getConnection("jdbc:mysql://localhost:3306/dbbuku","root","");
+            ResultSet rs = cn.createStatement().executeQuery("SELECT kode_buku,judul_buku,pengarang,tahun_terbit,lokasi_buku,gambar,nama_penerbit,nama_kategori from buku,penerbit,kategori WHERE buku.kode_penerbit=penerbit.kode_penerbit AND buku.kode_kategori=kategori.kode_kategori ORDER BY kode_buku ASC"); 
+            Buku p;
+            while (rs.next()){
+                p = new Buku(
+                        rs.getString("kode_buku"),
+                        rs.getString("judul_buku"),
+                        rs.getString("pengarang"),
+                        rs.getInt("tahun_terbit"),
+                        rs.getString("lokasi_buku"),
+                        rs.getBytes("gambar"),
+                        rs.getString("nama_penerbit"),
+                        rs.getString("nama_kategori")
+                );
+            list.add(p);    
+            }
+                    } catch (SQLException ex) {
+            Logger.getLogger(Admin.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return list;
+    }
+private ArrayList<Buku> BindTableSearchHome() {
+        ArrayList<Buku> list = new ArrayList<Buku>();
+        try {
+            Connection cn =  DriverManager.getConnection("jdbc:mysql://localhost:3306/dbbuku","root","");
+            ResultSet rs = cn.createStatement().executeQuery("SELECT kode_buku,judul_buku,pengarang,tahun_terbit,lokasi_buku,gambar,nama_penerbit,nama_kategori from buku,penerbit,kategori WHERE buku.kode_penerbit=penerbit.kode_penerbit AND buku.kode_kategori=kategori.kode_kategori AND buku.judul_buku like '%"+search.getText()+"%' ORDER BY kode_buku ASC"); 
+            Buku p;
+            while (rs.next()){
+                p = new Buku(
+                        rs.getString("kode_buku"),
+                        rs.getString("judul_buku"),
+                        rs.getString("pengarang"),
+                        rs.getInt("tahun_terbit"),
+                        rs.getString("lokasi_buku"),
+                        rs.getBytes("gambar"),
+                        rs.getString("nama_penerbit"),
+                        rs.getString("nama_kategori")
+                );
+            list.add(p);    
+            }
+                    } catch (SQLException ex) {
+            Logger.getLogger(Admin.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return list;
+    }
+private ArrayList<Buku> BindTableCategory() {
+        ArrayList<Buku> list = new ArrayList<Buku>();
+        try {
+            Connection cn =  DriverManager.getConnection("jdbc:mysql://localhost:3306/dbbuku","root","");
+            if (jComboBox1.getSelectedItem().equals("All")){
+                ResultSet rs = cn.createStatement().executeQuery("SELECT kode_buku,judul_buku,pengarang,tahun_terbit,lokasi_buku,gambar,nama_penerbit,nama_kategori from buku,penerbit,kategori WHERE buku.kode_penerbit=penerbit.kode_penerbit AND buku.kode_kategori=kategori.kode_kategori ORDER BY kode_buku ASC"); 
+            Buku p;
+            while (rs.next()){ 
+                p = new Buku(
+                        rs.getString("kode_buku"),
+                        rs.getString("judul_buku"),
+                        rs.getString("pengarang"),
+                        rs.getInt("tahun_terbit"),
+                        rs.getString("lokasi_buku"),
+                        rs.getBytes("gambar"),
+                        rs.getString("nama_penerbit"),
+                        rs.getString("nama_kategori")
+                );
+            list.add(p);    
+            }
+            } else {
+            ResultSet rs = cn.createStatement().executeQuery("SELECT kode_buku,judul_buku,pengarang,tahun_terbit,lokasi_buku,gambar,nama_penerbit,nama_kategori from buku,penerbit,kategori WHERE buku.kode_penerbit=penerbit.kode_penerbit AND buku.kode_kategori=kategori.kode_kategori AND buku.kode_kategori='"+getC1()+"' ORDER BY kode_buku ASC"); 
+            Buku p;
+            while (rs.next()){
+                p = new Buku(
+                        rs.getString("kode_buku"),
+                        rs.getString("judul_buku"),
+                        rs.getString("pengarang"),
+                        rs.getInt("tahun_terbit"),
+                        rs.getString("lokasi_buku"),
+                        rs.getBytes("gambar"),
+                        rs.getString("nama_penerbit"),
+                        rs.getString("nama_kategori")
+                );
+            list.add(p);    
+            }
+            }
+                    } catch (SQLException ex) {
+            Logger.getLogger(Admin.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return list;
+    }
+public void populateJtble(){
+        ArrayList<Buku> list = BindTable();
+        String[] columnName = {"KODE","JUDUL BUKU","PENGARANG","TAHUN TERBIT","LOKASI BUKU","GAMBAR","PENERBIT","KATEGORI"};
+        Object[][] rows = new Object[list.size()][8];
+        for (int i = 0; i < list.size(); i++){
+            rows[i][0]=list.get(i).getKodeBuku();
+            rows[i][1]=list.get(i).getJudulBuku();
+            rows[i][2]=list.get(i).getPengarang();
+            rows[i][3]=list.get(i).getThnTerbit();
+            rows[i][4]=list.get(i).getLokasi();
+            
+            if(list.get(i).getGambar() != null){
+                ImageIcon image = new ImageIcon(new ImageIcon(list.get(i).getGambar()).getImage().getScaledInstance(150, 120, Image.SCALE_SMOOTH));
+                
+                rows[i][5] = image;
+            }else{
+                rows[i][5] = null;
+            }
+            
+            rows[i][6]=list.get(i).getPenerbit();
+            rows[i][7]=list.get(i).getKategori();
+        }
+        TheModel model = new TheModel(rows, columnName);
+        jTable1.setModel(model);
+        jTable1.setRowHeight(120);
+        jTable1.getColumnModel().getColumn(5).setPreferredWidth(150);
+       
+    }
+public HashMap<String, Integer> populateCombo2(){
+         HashMap<String, Integer> map = new HashMap<String, Integer>();
+         try {
+            Connection cn =  DriverManager.getConnection("jdbc:mysql://localhost:3306/dbbuku","root","");
+            ResultSet rs = cn.createStatement().executeQuery("select kode_kategori,nama_kategori from kategori"); 
+            ComboItem cmi;
+            while (rs.next()){
+                cmi = new ComboItem(rs.getInt(1),rs.getString(2));
+                map.put(cmi.getNama(), cmi.getKode());
+            }
+                    } catch (SQLException ex) {
+            Logger.getLogger(Admin.class.getName()).log(Level.SEVERE, null, ex);
+        }
+         return map;
+    }
+public void BindCombo2(){
+        HashMap<String, Integer> map = populateCombo2();
+        for (String s : map.keySet()){
+            jComboBox1.addItem(s);
+        }
+    }
 }

@@ -48,6 +48,7 @@ public class AddPublisher extends javax.swing.JFrame {
         jLabel24 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Add Publisher");
         setUndecorated(true);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -261,7 +262,7 @@ public class AddPublisher extends javax.swing.JFrame {
         } catch (SQLException ex) {
             Logger.getLogger(AddCategory.class.getName()).log(Level.SEVERE, null, ex);
         }
-     System.gc();
+        System.gc();
         java.awt.Window win[] = java.awt.Window.getWindows(); 
         for(int i=0;i<win.length;i++){ 
         win[i].setVisible(false);

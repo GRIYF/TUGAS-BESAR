@@ -60,6 +60,7 @@ DefaultTableModel model;
         jLabel39 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Edit Category");
         setUndecorated(true);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -302,15 +303,6 @@ DefaultTableModel model;
         } catch (SQLException ex) {
             Logger.getLogger(Admin.class.getName()).log(Level.SEVERE, null, ex);
         }
-        System.gc();
-        java.awt.Window win[] = java.awt.Window.getWindows(); 
-        for(int i=0;i<win.length;i++){ 
-        win[i].setVisible(false);
-        win[i]=null;}         
-        Admin admin = new Admin();
-        admin.setVisible(true);
-        admin.panelHide();
-       this.setVisible(false);
     }//GEN-LAST:event_btnSaveMousePressed
 
     private void btnSaveMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSaveMouseReleased
@@ -379,8 +371,16 @@ DefaultTableModel model;
 
     private void btnCancelMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCancelMousePressed
         // TODO add your handling code here:
-        this.setVisible(false);
         setColorClicked(btnCancel);
+        System.gc();
+        java.awt.Window win[] = java.awt.Window.getWindows(); 
+        for(int i=0;i<win.length;i++){ 
+        win[i].setVisible(false);
+        win[i]=null;}         
+        Admin admin = new Admin();
+        admin.setVisible(true);
+        admin.panelHide();
+       this.setVisible(false);
     }//GEN-LAST:event_btnCancelMousePressed
 
     private void btnCancelMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCancelMouseReleased

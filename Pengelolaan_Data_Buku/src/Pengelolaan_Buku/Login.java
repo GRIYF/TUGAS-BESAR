@@ -6,6 +6,11 @@
 package Pengelolaan_Buku;
 
 import java.awt.Color;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -49,6 +54,7 @@ public class Login extends javax.swing.JFrame {
         jLabel8 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Login");
         setUndecorated(true);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -241,15 +247,34 @@ public class Login extends javax.swing.JFrame {
     private void jPanel5MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel5MousePressed
         // TODO add your handling code here:
         jPanel5.setBackground(new Color(67,154,246));
-        System.gc();
-        java.awt.Window win[] = java.awt.Window.getWindows(); 
-        for(int i=0;i<win.length;i++){ 
-        win[i].dispose(); 
-        win[i]=null;} 
-        
-        Admin admin = new Admin();
-        admin.setVisible(true);
-        
+        try {
+            ResultSet rs;
+            String sql;
+            Statement stat = null;
+            Connection cn =  DriverManager.getConnection("jdbc:mysql://localhost:3306/dbbuku","root","");
+            stat = cn.createStatement();
+            sql = "SELECT * FROM admin WHERE username='"+jTextField1.getText()+"' AND password='"+jPasswordField1.getText()+"'";
+            rs = stat.executeQuery(sql);
+            if(rs.next()){
+                if(jTextField1.getText().equals(rs.getString("username")) && jPasswordField1.getText().equals(rs.getString("password"))){
+                    System.gc();
+                    java.awt.Window win[] = java.awt.Window.getWindows(); 
+                    for(int i=0;i<win.length;i++){ 
+                    win[i].dispose(); 
+                    win[i]=null;} 
+                    Admin admin = new Admin();
+                    admin.setVisible(true);
+                } else {
+                    JOptionPane.showMessageDialog(null, "username atau password salah");
+                    jPasswordField1.setText("");
+                }
+            }else{
+                    JOptionPane.showMessageDialog(null, "username atau password salah");
+                    jPasswordField1.setText("");
+                }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, e.getMessage());
+        }
     }//GEN-LAST:event_jPanel5MousePressed
 
     private void jPanel6MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel6MousePressed

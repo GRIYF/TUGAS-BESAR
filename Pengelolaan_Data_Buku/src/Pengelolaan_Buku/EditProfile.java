@@ -6,7 +6,22 @@
 package Pengelolaan_Buku;
 
 import java.awt.Color;
+import java.awt.Image;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
@@ -17,10 +32,36 @@ public class EditProfile extends javax.swing.JFrame {
     /**
      * Creates new form EditProfile
      */
-    public EditProfile() {
-        initComponents();
+    byte[] gambarprofile;
+
+    public byte[] getGambarprofile() {
+        return gambarprofile;
     }
 
+    public void setGambarprofile(byte[] gambarprofile) {
+        this.gambarprofile = gambarprofile;
+    }
+    
+    public EditProfile() {
+        initComponents();
+        tampilkan();
+    }
+    
+    String ImgPath = null;
+    //resize Image
+    public ImageIcon ResizeImage(String imagePath, byte[] pic){
+        ImageIcon myImage = null;
+        if(imagePath != null)
+        {
+            myImage = new ImageIcon(imagePath);
+        } else {
+        myImage = new ImageIcon(pic);
+        }
+        Image img = myImage.getImage();
+        Image img2 = img.getScaledInstance(jLabel2.getWidth(), jLabel2.getHeight(), Image.SCALE_SMOOTH);
+        ImageIcon image = new ImageIcon(img2);
+        return image;
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -32,6 +73,7 @@ public class EditProfile extends javax.swing.JFrame {
 
         jPanel2 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
         btnCancel = new javax.swing.JPanel();
         jLabel38 = new javax.swing.JLabel();
         btnClear = new javax.swing.JPanel();
@@ -46,12 +88,13 @@ public class EditProfile extends javax.swing.JFrame {
         jLabel44 = new javax.swing.JLabel();
         btnBrowse = new javax.swing.JPanel();
         jLabel40 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
         jTextField2 = new javax.swing.JTextField();
         jTextField3 = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
+        jPasswordField1 = new javax.swing.JPasswordField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Edit Profile");
         setUndecorated(true);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -60,17 +103,8 @@ public class EditProfile extends javax.swing.JFrame {
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel1.setBackground(new java.awt.Color(153, 153, 153));
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 256, Short.MAX_VALUE)
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 200, Short.MAX_VALUE)
-        );
+        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 256, 200));
 
         jPanel2.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(111, 150, 256, 200));
 
@@ -274,9 +308,6 @@ public class EditProfile extends javax.swing.JFrame {
 
         jPanel2.add(btnBrowse, new org.netbeans.lib.awtextra.AbsoluteConstraints(189, 378, -1, -1));
 
-        jTextField1.setBorder(null);
-        jPanel2.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 320, 400, 30));
-
         jTextField2.setBorder(null);
         jPanel2.add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 130, 400, 30));
 
@@ -287,6 +318,9 @@ public class EditProfile extends javax.swing.JFrame {
         jLabel1.setForeground(new java.awt.Color(52, 152, 219));
         jLabel1.setText("EDIT ADMIN INFORMATION");
         jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 10, -1, -1));
+
+        jPasswordField1.setBorder(null);
+        jPanel2.add(jPasswordField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 320, 400, 30));
 
         getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1000, 500));
 
@@ -307,6 +341,54 @@ public class EditProfile extends javax.swing.JFrame {
     private void btnSaveMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSaveMousePressed
         // TODO add your handling code here:
         setColorClicked(btnSave);
+        String UpdateQuery = null;
+        PreparedStatement ps = null;
+        if (ImgPath == null){
+        try {
+            Connection cn =  DriverManager.getConnection("jdbc:mysql://localhost:3306/dbbuku","root","");
+           UpdateQuery = "UPDATE admin SET nama_admin=?,username=?,password=?";
+            ps=cn.prepareStatement(UpdateQuery);
+            ps.setString(1, jTextField2.getText());
+            ps.setString(2, jTextField3.getText());
+            ps.setString(3, jPasswordField1.getText());
+            ps.executeUpdate();
+            JOptionPane.showMessageDialog(null, "Tersimpan");
+            System.gc();
+            java.awt.Window win[] = java.awt.Window.getWindows(); 
+            for(int i=0;i<win.length;i++){ 
+            win[i].setVisible(false);
+            win[i]=null;}         
+            Admin admin = new Admin();
+            admin.setVisible(true);
+            this.setVisible(false);
+        } catch (SQLException ex) {
+            Logger.getLogger(Admin.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        } else {
+            try {
+            Connection cn =  DriverManager.getConnection("jdbc:mysql://localhost:3306/dbbuku","root","");
+            UpdateQuery = "UPDATE admin SET nama_admin=?,username=?,password=?,photoprofile=?";
+            ps=cn.prepareStatement(UpdateQuery);
+            ps.setString(1, jTextField2.getText());
+            ps.setString(2, jTextField3.getText());
+            ps.setString(3, jPasswordField1.getText());
+            InputStream img = new FileInputStream(new File(ImgPath));
+            ps.setBlob(4, img);
+            ps.executeUpdate();
+           JOptionPane.showMessageDialog(null, "Tersimpan");
+           System.gc();
+            java.awt.Window win[] = java.awt.Window.getWindows(); 
+            for(int i=0;i<win.length;i++){ 
+            win[i].setVisible(false);
+            win[i]=null;}         
+            Admin admin = new Admin();
+            admin.setVisible(true);
+            this.setVisible(false);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage());
+        }
+             
+        }
     }//GEN-LAST:event_btnSaveMousePressed
 
     private void btnSaveMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSaveMouseReleased
@@ -368,6 +450,21 @@ public class EditProfile extends javax.swing.JFrame {
     private void btnBrowseMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnBrowseMousePressed
         // TODO add your handling code here:
         setColorClicked(btnBrowse);
+        JFileChooser file = new JFileChooser();
+        file.setCurrentDirectory(new File(System.getProperty("user.home")));
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("*.images","jpg","png");
+        file.addChoosableFileFilter(filter);
+        
+        int result = file.showSaveDialog(null);
+        if(result == JFileChooser.APPROVE_OPTION)
+        {
+        File selectedFile = file.getSelectedFile();
+        String path = selectedFile.getAbsolutePath();
+        jLabel2.setIcon(ResizeImage(path,null));
+        ImgPath=path;
+        } else {
+            System.out.println("No File Selected");
+        }
     }//GEN-LAST:event_btnBrowseMousePressed
 
     private void btnBrowseMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnBrowseMouseReleased
@@ -416,6 +513,7 @@ public class EditProfile extends javax.swing.JFrame {
     private javax.swing.JPanel btnClear;
     private javax.swing.JPanel btnSave;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel24;
     private javax.swing.JLabel jLabel25;
     private javax.swing.JLabel jLabel38;
@@ -428,7 +526,7 @@ public class EditProfile extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel16;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JPasswordField jPasswordField1;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
     // End of variables declaration//GEN-END:variables
@@ -440,6 +538,25 @@ void setColorButton(JPanel panel){
     }
     void setColorClicked(JPanel panel){
         panel.setBackground(new Color(52, 73, 120));
+    }
+    private void tampilkan() {
+        try {
+            Connection cn =  DriverManager.getConnection("jdbc:mysql://localhost:3306/dbbuku","root","");
+            ResultSet rs = cn.createStatement().executeQuery("select * from admin"); 
+            if(rs.next()){
+            jTextField2.setText(rs.getString("nama_admin"));
+            jTextField3.setText(rs.getString("username"));
+            jPasswordField1.setText(rs.getString("password"));
+            setGambarprofile(rs.getBytes("photoprofile"));
+            ImageIcon myImage = null;
+            myImage = new ImageIcon(getGambarprofile());
+            Image img = myImage.getImage();
+            Image img2 = img.getScaledInstance(jLabel2.getWidth(), jLabel2.getHeight(), Image.SCALE_SMOOTH);
+            ImageIcon image = new ImageIcon(img2);
+                jLabel2.setIcon(image);
+            } } catch (SQLException ex) {
+            Logger.getLogger(Admin.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }
 
